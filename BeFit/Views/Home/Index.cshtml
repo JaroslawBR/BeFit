@@ -1,8 +1,52 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Strona główna";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-5">
+    <h1 class="display-4">Witaj w BeFit!</h1>
+    <p class="lead">Twój osobisty dziennik treningowy.</p>
 </div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Rozpocznij Trening</h5>
+                    <p class="card-text">Dodaj nową sesję treningową i zanotuj swoje wyniki.</p>
+                    <a asp-controller="TrainingSessions" asp-action="Create" class="btn btn-primary btn-lg w-100">Dodaj Sesję</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Historia Treningów</h5>
+                    <p class="card-text">Przeglądaj swoje poprzednie sesje i edytuj wpisy.</p>
+                    <a asp-controller="TrainingSessions" asp-action="Index" class="btn btn-outline-secondary btn-lg w-100">Lista Treningów</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Twoje Postępy</h5>
+                    <p class="card-text">Sprawdź statystyki i zobacz jak rośnie Twoja forma.</p>
+                    <a asp-controller="Stats" asp-action="Index" class="btn btn-success btn-lg w-100">Statystyki</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info text-center">
+        <h4>Zaloguj się, aby rozpocząć!</h4>
+        <p>Aby korzystać z dziennika treningowego, musisz posiadać konto.</p>
+        <a class="btn btn-primary" href="/Identity/Account/Login">Zaloguj się</a>
+        <a class="btn btn-secondary" href="/Identity/Account/Register">Zarejestruj się</a>
+    </div>
+}

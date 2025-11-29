@@ -11,7 +11,7 @@ namespace BeFit
         {
             var builder = WebApplication.CreateBuilder(args);
 
-  
+   
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -19,9 +19,8 @@ namespace BeFit
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-       
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
-                options.SignIn.RequireConfirmedAccount = false; 
+                options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
@@ -34,14 +33,19 @@ namespace BeFit
 
             var app = builder.Build();
 
-    
+     
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<ApplicationDbContext>();
+
+
+                await context.Database.MigrateAsync();
+
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
-        
+       
                 var roles = new[] { "Admin", "User" };
                 foreach (var role in roles)
                 {
@@ -49,9 +53,9 @@ namespace BeFit
                         await roleManager.CreateAsync(new IdentityRole(role));
                 }
 
-        
-                string adminEmail = "admin@test.pl"; 
-                string adminPassword = "admin@test.pl"; 
+  
+                string adminEmail = "admin@test.pl";
+                string adminPassword = "admin@test.pl";
 
                 var adminUser = await userManager.FindByEmailAsync(adminEmail);
                 if (adminUser == null)
@@ -63,18 +67,28 @@ namespace BeFit
                         EmailConfirmed = true
                     };
 
-            
                     var result = await userManager.CreateAsync(adminUser, adminPassword);
 
                     if (result.Succeeded)
                     {
-
                         await userManager.AddToRoleAsync(adminUser, "Admin");
                     }
                 }
+
+                if (!context.ExerciseTypes.Any())
+                {
+                    context.ExerciseTypes.AddRange(
+                        new ExerciseType { Name = "Bie¿nia" },
+                        new ExerciseType { Name = "Przysiady" },
+                        new ExerciseType { Name = "Rower" },
+                        new ExerciseType { Name = "Wyciskanie sztangi" },
+                        new ExerciseType { Name = "Martwy ci¹g" }
+                    );
+                    await context.SaveChangesAsync();
+                }
             }
 
-  
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
@@ -90,7 +104,8 @@ namespace BeFit
 
             app.UseRouting();
 
-            app.UseAuthorization(); 
+            app.UseAuthentication(); 
+            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",

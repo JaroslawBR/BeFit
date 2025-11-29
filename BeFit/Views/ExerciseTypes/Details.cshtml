@@ -1,13 +1,13 @@
 ﻿@model BeFit.Models.ExerciseType
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Szczegóły";
 }
 
-<h1>Details</h1>
+<h1>Szczegóły typu ćwiczenia</h1>
 
 <div>
-    <h4>ExerciseType</h4>
+    <h4>Typ Ćwiczenia</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -19,6 +19,9 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.Id">Edytuj</a> <span>|</span>
+    }
+    <a asp-action="Index">Powrót do listy</a>
 </div>

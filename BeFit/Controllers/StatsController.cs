@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BeFit.Controllers
 {
-    [Authorize]
+    [Authorize] 
     public class StatsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,34 +22,41 @@ namespace BeFit.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+
             var fourWeeksAgo = DateTime.Now.AddDays(-28);
 
-
+        
             var stats = await _context.ExerciseTypes
                 .Select(type => new StatsViewModel
                 {
                     ExerciseName = type.Name,
 
-
+               
                     TimesPerformed = _context.TrainingExercises
                         .Where(e => e.ExerciseTypeId == type.Id &&
                                     e.TrainingSession.UserId == user.Id &&
                                     e.TrainingSession.StartTime >= fourWeeksAgo)
                         .Count(),
 
+                    
                     TotalReps = _context.TrainingExercises
                         .Where(e => e.ExerciseTypeId == type.Id &&
                                     e.TrainingSession.UserId == user.Id &&
                                     e.TrainingSession.StartTime >= fourWeeksAgo)
                         .Sum(e => e.Sets * e.Reps),
 
-
+                 
                     AverageWeight = _context.TrainingExercises
                         .Where(e => e.ExerciseTypeId == type.Id &&
                                     e.TrainingSession.UserId == user.Id &&
                                     e.TrainingSession.StartTime >= fourWeeksAgo)
                         .Average(e => (double?)e.Weight) ?? 0,
 
+               
                     MaxWeight = _context.TrainingExercises
                         .Where(e => e.ExerciseTypeId == type.Id &&
                                     e.TrainingSession.UserId == user.Id &&

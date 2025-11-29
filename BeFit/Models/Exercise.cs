@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeFit.Models
 {
-    public class Exercise
+    public class Exercise : IValidatableObject
     {
         public int Id { get; set; }
 
@@ -21,14 +21,26 @@ namespace BeFit.Models
 
         [Display(Name = "Typ ćwiczenia")]
         public int ExerciseTypeId { get; set; }
+
         [ForeignKey("ExerciseTypeId")]
         [Display(Name = "Typ ćwiczenia")]
         public virtual ExerciseType? ExerciseType { get; set; }
 
         [Display(Name = "Sesja treningowa")]
         public int TrainingSessionId { get; set; }
+
         [ForeignKey("TrainingSessionId")]
         [Display(Name = "Sesja treningowa")]
         public virtual TrainingSession? TrainingSession { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Sets * Reps <= 0)
+            {
+                yield return new ValidationResult(
+                    "Trening musi zawierać przynajmniej jedną serię i jedno powtórzenie.",
+                    new[] { nameof(Sets), nameof(Reps) });
+            }
+        }
     }
 }

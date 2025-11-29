@@ -2,7 +2,7 @@
 
 namespace BeFit.Models
 {
-    public class TrainingSession
+    public class TrainingSession : IValidatableObject
     {
         public int Id { get; set; }
 
@@ -18,5 +18,15 @@ namespace BeFit.Models
         public virtual ApplicationUser? User { get; set; }
 
         public virtual ICollection<Exercise>? Exercises { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (EndTime < StartTime)
+            {
+                yield return new ValidationResult(
+                    "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.",
+                    new[] { nameof(EndTime) });
+            }
+        }
     }
 }

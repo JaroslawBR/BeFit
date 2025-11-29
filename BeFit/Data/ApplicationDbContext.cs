@@ -4,7 +4,8 @@ using BeFit.Models;
 
 namespace BeFit.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    // Dziedziczenie po IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

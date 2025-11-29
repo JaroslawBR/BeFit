@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BeFit.Migrations
 {
     /// <inheritdoc />
-    public partial class AddBeFitModels : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -61,20 +61,6 @@ namespace BeFit.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ExerciseTypes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TrainingSessions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    StartTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TrainingSessions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -184,6 +170,26 @@ namespace BeFit.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TrainingSessions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    StartTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrainingSessions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrainingSessions_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TrainingExercises",
                 columns: table => new
                 {
@@ -258,6 +264,11 @@ namespace BeFit.Migrations
                 name: "IX_TrainingExercises_TrainingSessionId",
                 table: "TrainingExercises",
                 column: "TrainingSessionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrainingSessions_UserId",
+                table: "TrainingSessions",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -285,13 +296,13 @@ namespace BeFit.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "ExerciseTypes");
 
             migrationBuilder.DropTable(
                 name: "TrainingSessions");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

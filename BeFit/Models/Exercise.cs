@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeFit.Models
 {
@@ -6,23 +7,28 @@ namespace BeFit.Models
     {
         public int Id { get; set; }
 
-        public double Weight { get; set; } // Obciążenie
-        public int Sets { get; set; }      // Liczba serii
-        public int Reps { get; set; }      // Liczba powtórzeń w serii
+        [Display(Name = "Obciążenie (kg)")]
+        [Range(0, 1000, ErrorMessage = "Błędna wartość")]
+        public double Weight { get; set; }
 
-        // Klucz obcy do ExerciseType
+        [Display(Name = "Liczba serii")]
+        [Range(1, 100, ErrorMessage = "Wartość musi być większa od 0")]
+        public int Sets { get; set; }
+
+        [Display(Name = "Liczba powtórzeń")]
+        [Range(1, 1000, ErrorMessage = "Wartość musi być większa od 0")]
+        public int Reps { get; set; }
+
+        [Display(Name = "Typ ćwiczenia")]
         public int ExerciseTypeId { get; set; }
         [ForeignKey("ExerciseTypeId")]
-        public virtual ExerciseType ExerciseType { get; set; }
+        [Display(Name = "Typ ćwiczenia")]
+        public virtual ExerciseType? ExerciseType { get; set; }
 
-        // Klucz obcy do TrainingSession
+        [Display(Name = "Sesja treningowa")]
         public int TrainingSessionId { get; set; }
         [ForeignKey("TrainingSessionId")]
-        public virtual TrainingSession TrainingSession { get; set; }
-
-        // W przyszłości można dodać powiązanie z użytkownikiem
-        // public string AppUserId { get; set; }
-        // [ForeignKey("AppUserId")]
-        // public virtual AppUser AppUser { get; set; }
+        [Display(Name = "Sesja treningowa")]
+        public virtual TrainingSession? TrainingSession { get; set; }
     }
 }

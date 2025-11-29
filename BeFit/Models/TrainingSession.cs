@@ -6,13 +6,18 @@ namespace BeFit.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Data rozpoczęcia jest wymagana")]
+        [Display(Name = "Początek treningu")]
         public DateTime StartTime { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Data zakończenia jest wymagana")]
+        [Display(Name = "Koniec treningu")]
         public DateTime EndTime { get; set; }
 
-        // TODO: Opcjonalna walidacja sprawdzająca, czy
-        // EndTime jest późniejsze niż StartTime
+        // Powiązanie z użytkownikiem
+        public string? UserId { get; set; }
+        public virtual ApplicationUser? User { get; set; }
+
+        public virtual ICollection<Exercise>? Exercises { get; set; }
     }
 }

@@ -6,8 +6,9 @@ namespace BeFit.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(100)] // Ograniczenie długości nazwy do 100 znaków
+        [Required(ErrorMessage = "Nazwa jest wymagana")]
+        [StringLength(100, ErrorMessage = "Nazwa zbyt długa")]
+        [Display(Name = "Nazwa ćwiczenia")]
         public string Name { get; set; }
     }
 }

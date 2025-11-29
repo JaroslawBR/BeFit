@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BeFit.Data;
 using BeFit.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeFit.Controllers
 {
+    // Nie dajemy tu [Authorize], bo Index i Details mają być publiczne
     public class ExerciseTypesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,41 +18,35 @@ namespace BeFit.Controllers
             _context = context;
         }
 
-        // GET: ExerciseTypes
+        // GET: ExerciseTypes - Dostępne dla wszystkich
         public async Task<IActionResult> Index()
         {
             return View(await _context.ExerciseTypes.ToListAsync());
         }
 
-        // GET: ExerciseTypes/Details/5
+        // GET: ExerciseTypes/Details/5 - Dostępne dla wszystkich
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var exerciseType = await _context.ExerciseTypes
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (exerciseType == null)
-            {
-                return NotFound();
-            }
+            if (exerciseType == null) return NotFound();
 
             return View(exerciseType);
         }
 
-        // GET: ExerciseTypes/Create
+        // GET: ExerciseTypes/Create - Tylko dla Administratora
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: ExerciseTypes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: ExerciseTypes/Create - Tylko dla Administratora
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Name")] ExerciseType exerciseType)
         {
             if (ModelState.IsValid)
@@ -65,33 +58,24 @@ namespace BeFit.Controllers
             return View(exerciseType);
         }
 
-        // GET: ExerciseTypes/Edit/5
+        // GET: ExerciseTypes/Edit/5 - Tylko dla Administratora
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var exerciseType = await _context.ExerciseTypes.FindAsync(id);
-            if (exerciseType == null)
-            {
-                return NotFound();
-            }
+            if (exerciseType == null) return NotFound();
             return View(exerciseType);
         }
 
-        // POST: ExerciseTypes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: ExerciseTypes/Edit/5 - Tylko dla Administratora
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] ExerciseType exerciseType)
         {
-            if (id != exerciseType.Id)
-            {
-                return NotFound();
-            }
+            if (id != exerciseType.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -102,50 +86,39 @@ namespace BeFit.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ExerciseTypeExists(exerciseType.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!ExerciseTypeExists(exerciseType.Id)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
             return View(exerciseType);
         }
 
-        // GET: ExerciseTypes/Delete/5
+        // GET: ExerciseTypes/Delete/5 - Tylko dla Administratora
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var exerciseType = await _context.ExerciseTypes
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (exerciseType == null)
-            {
-                return NotFound();
-            }
+            if (exerciseType == null) return NotFound();
 
             return View(exerciseType);
         }
 
-        // POST: ExerciseTypes/Delete/5
+        // POST: ExerciseTypes/Delete/5 - Tylko dla Administratora
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var exerciseType = await _context.ExerciseTypes.FindAsync(id);
             if (exerciseType != null)
             {
                 _context.ExerciseTypes.Remove(exerciseType);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

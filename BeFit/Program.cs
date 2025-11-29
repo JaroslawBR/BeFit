@@ -11,7 +11,7 @@ namespace BeFit
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // 1. Konfiguracja bazy danych SQLite
+  
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -19,29 +19,29 @@ namespace BeFit
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            // 2. Konfiguracja Identity: ApplicationUser oraz Role
+       
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
-                options.SignIn.RequireConfirmedAccount = false; // U³atwienie dla testów
+                options.SignIn.RequireConfirmedAccount = false; 
                 options.Password.RequireDigit = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 3;
             })
-                .AddRoles<IdentityRole>() // WA¯NE: Dodanie obs³ugi ról
+                .AddRoles<IdentityRole>() 
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
-            // 3. Mechanizm tworzenia roli Administratora (Seedowanie)
+    
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
-                // 1. Tworzenie ról (jeœli nie istniej¹)
+        
                 var roles = new[] { "Admin", "User" };
                 foreach (var role in roles)
                 {
@@ -49,9 +49,9 @@ namespace BeFit
                         await roleManager.CreateAsync(new IdentityRole(role));
                 }
 
-                // 2. Tworzenie u¿ytkownika Administratora (jeœli nie istnieje)
-                string adminEmail = "admin@test.pl"; // Login admina
-                string adminPassword = "password";   // Has³o admina (proste, bo masz wy³¹czone wymagania w opcjach)
+        
+                string adminEmail = "admin@test.pl"; 
+                string adminPassword = "admin@test.pl"; 
 
                 var adminUser = await userManager.FindByEmailAsync(adminEmail);
                 if (adminUser == null)
@@ -63,18 +63,18 @@ namespace BeFit
                         EmailConfirmed = true
                     };
 
-                    // Tworzenie u¿ytkownika
+            
                     var result = await userManager.CreateAsync(adminUser, adminPassword);
 
                     if (result.Succeeded)
                     {
-                        // Przypisanie roli Admin
+
                         await userManager.AddToRoleAsync(adminUser, "Admin");
                     }
                 }
             }
 
-            // 4. Pipeline HTTP
+  
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
@@ -90,7 +90,7 @@ namespace BeFit
 
             app.UseRouting();
 
-            app.UseAuthorization(); // Autoryzacja po routingu
+            app.UseAuthorization(); 
 
             app.MapControllerRoute(
                 name: "default",

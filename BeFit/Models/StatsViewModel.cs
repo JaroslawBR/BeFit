@@ -14,7 +14,7 @@ namespace BeFit.Models
         public int TotalReps { get; set; }
 
         [Display(Name = "Średnie obciążenie (kg)")]
-        [DisplayFormat(DataFormatString = "{0:N2}")] // Formatowanie do 2 miejsc po przecinku
+        [DisplayFormat(DataFormatString = "{0:N2}")] 
         public double AverageWeight { get; set; }
 
         [Display(Name = "Maksymalne obciążenie (kg)")]

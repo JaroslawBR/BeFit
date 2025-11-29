@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BeFit.Controllers
 {
-    [Authorize] // [Wymagane] Tylko zalogowani
+    [Authorize] 
     public class ExercisesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,12 +24,12 @@ namespace BeFit.Controllers
             _userManager = userManager;
         }
 
-        // GET: Exercises
+   
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
 
-            // [Wymagane] Filtrowanie po sesjach użytkownika
+          
             var exercises = _context.TrainingExercises
                 .Include(e => e.ExerciseType)
                 .Include(e => e.TrainingSession)
@@ -38,7 +38,7 @@ namespace BeFit.Controllers
             return View(await exercises.ToListAsync());
         }
 
-        // GET: Exercises/Details/5
+     
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -54,14 +54,13 @@ namespace BeFit.Controllers
             return View(exercise);
         }
 
-        // GET: Exercises/Create
         public async Task<IActionResult> Create()
         {
             var user = await _userManager.GetUserAsync(User);
 
-            ViewData["ExerciseTypeId"] = new SelectList(_context.ExerciseTypes, "Id", "Name"); // [Wymagane] Nazwa zamiast ID
+            ViewData["ExerciseTypeId"] = new SelectList(_context.ExerciseTypes, "Id", "Name");
 
-            // [Wymagane] Tylko własne sesje i data zamiast ID
+
             ViewData["TrainingSessionId"] = new SelectList(
                 _context.TrainingSessions.Where(s => s.UserId == user.Id),
                 "Id",
@@ -70,21 +69,20 @@ namespace BeFit.Controllers
             return View();
         }
 
-        // POST: Exercises/Create
+ 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Weight,Sets,Reps,ExerciseTypeId,TrainingSessionId")] Exercise exercise)
         {
             var user = await _userManager.GetUserAsync(User);
 
-            // Weryfikacja czy sesja należy do usera
+
             var session = await _context.TrainingSessions.FindAsync(exercise.TrainingSessionId);
             if (session == null || session.UserId != user.Id)
             {
                 ModelState.AddModelError("", "Nieprawidłowa sesja treningowa.");
             }
 
-            // Ignorowanie pól nawigacyjnych
             ModelState.Remove("ExerciseType");
             ModelState.Remove("TrainingSession");
 
@@ -104,7 +102,7 @@ namespace BeFit.Controllers
             return View(exercise);
         }
 
-        // GET: Exercises/Edit/5
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -125,7 +123,6 @@ namespace BeFit.Controllers
             return View(exercise);
         }
 
-        // POST: Exercises/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Weight,Sets,Reps,ExerciseTypeId,TrainingSessionId")] Exercise exercise)
@@ -134,7 +131,6 @@ namespace BeFit.Controllers
 
             var user = await _userManager.GetUserAsync(User);
 
-            // Weryfikacja uprawnień do starej i nowej sesji
             var session = await _context.TrainingSessions.FindAsync(exercise.TrainingSessionId);
             if (session == null || session.UserId != user.Id)
             {
@@ -163,7 +159,7 @@ namespace BeFit.Controllers
             return View(exercise);
         }
 
-        // GET: Exercises/Delete/5
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -179,7 +175,6 @@ namespace BeFit.Controllers
             return View(exercise);
         }
 
-        // POST: Exercises/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

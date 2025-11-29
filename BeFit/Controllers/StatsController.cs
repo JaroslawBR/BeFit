@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BeFit.Controllers
 {
-    [Authorize] // [Wymagane] Dostęp tylko dla zalogowanych
+    [Authorize]
     public class StatsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,13 +24,13 @@ namespace BeFit.Controllers
             var user = await _userManager.GetUserAsync(User);
             var fourWeeksAgo = DateTime.Now.AddDays(-28);
 
-            // Pobieramy statystyki dla każdego typu ćwiczeń
+
             var stats = await _context.ExerciseTypes
                 .Select(type => new StatsViewModel
                 {
                     ExerciseName = type.Name,
 
-                    // [Wymagane] Filtrowanie: Tylko ten typ, Tylko ten User, Ostatnie 4 tyg.
+
                     TimesPerformed = _context.TrainingExercises
                         .Where(e => e.ExerciseTypeId == type.Id &&
                                     e.TrainingSession.UserId == user.Id &&
@@ -43,7 +43,7 @@ namespace BeFit.Controllers
                                     e.TrainingSession.StartTime >= fourWeeksAgo)
                         .Sum(e => e.Sets * e.Reps),
 
-                    // Używamy rzutowania na (double?), aby obsłużyć brak wyników (null)
+
                     AverageWeight = _context.TrainingExercises
                         .Where(e => e.ExerciseTypeId == type.Id &&
                                     e.TrainingSession.UserId == user.Id &&
@@ -56,7 +56,7 @@ namespace BeFit.Controllers
                                     e.TrainingSession.StartTime >= fourWeeksAgo)
                         .Max(e => (double?)e.Weight) ?? 0
                 })
-                .Where(s => s.TimesPerformed > 0) // Opcjonalnie: Pokaż tylko te, które ćwiczył
+                .Where(s => s.TimesPerformed > 0) 
                 .ToListAsync();
 
             return View(stats);

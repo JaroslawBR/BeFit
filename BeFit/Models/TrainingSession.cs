@@ -14,7 +14,6 @@ namespace BeFit.Models
         [Display(Name = "Koniec treningu")]
         public DateTime EndTime { get; set; }
 
-        // Powiązanie z użytkownikiem
         public string? UserId { get; set; }
         public virtual ApplicationUser? User { get; set; }
 

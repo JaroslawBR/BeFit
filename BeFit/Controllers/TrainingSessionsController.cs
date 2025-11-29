@@ -11,11 +11,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BeFit.Controllers
 {
-    [Authorize] // [Wymagane] Tylko dla zalogowanych
+    [Authorize]
     public class TrainingSessionsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager; // Menadżer użytkowników
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public TrainingSessionsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
@@ -27,7 +27,7 @@ namespace BeFit.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
-            // [Wymagane] Filtrowanie po użytkowniku
+    
             return View(await _context.TrainingSessions
                 .Where(s => s.UserId == user.Id)
                 .OrderByDescending(s => s.StartTime)
@@ -41,7 +41,7 @@ namespace BeFit.Controllers
             var user = await _userManager.GetUserAsync(User);
 
             var trainingSession = await _context.TrainingSessions
-                .FirstOrDefaultAsync(m => m.Id == id && m.UserId == user.Id); // Zabezpieczenie dostępu
+                .FirstOrDefaultAsync(m => m.Id == id && m.UserId == user.Id); 
 
             if (trainingSession == null) return NotFound();
 
@@ -59,14 +59,14 @@ namespace BeFit.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,StartTime,EndTime")] TrainingSession trainingSession)
         {
-            // Usuwamy UserId z walidacji, bo ustawiamy go ręcznie
+
             ModelState.Remove("UserId");
             ModelState.Remove("User");
 
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);
-                trainingSession.UserId = user.Id; // [Wymagane] Wiązanie użytkownika
+                trainingSession.UserId = user.Id; 
 
                 _context.Add(trainingSession);
                 await _context.SaveChangesAsync();
@@ -75,13 +75,12 @@ namespace BeFit.Controllers
             return View(trainingSession);
         }
 
-        // GET: TrainingSessions/Edit/5
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
             var user = await _userManager.GetUserAsync(User);
 
-            // Zabezpieczenie dostępu
             var trainingSession = await _context.TrainingSessions
                 .FirstOrDefaultAsync(s => s.Id == id && s.UserId == user.Id);
 
@@ -89,21 +88,20 @@ namespace BeFit.Controllers
             return View(trainingSession);
         }
 
-        // POST: TrainingSessions/Edit/5
+  
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,StartTime,EndTime")] TrainingSession trainingSession)
         {
             if (id != trainingSession.Id) return NotFound();
 
-            // Pobieramy użytkownika, by upewnić się, że edytuje swoje
+    
             var user = await _userManager.GetUserAsync(User);
             var existingSession = await _context.TrainingSessions.AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == id && s.UserId == user.Id);
 
-            if (existingSession == null) return NotFound(); // Próba edycji cudzej sesji
+            if (existingSession == null) return NotFound();
 
-            // Przywracamy UserId, bo formularz go nie przesyła
             trainingSession.UserId = user.Id;
             ModelState.Remove("UserId");
             ModelState.Remove("User");
@@ -132,8 +130,7 @@ namespace BeFit.Controllers
             var user = await _userManager.GetUserAsync(User);
 
             var trainingSession = await _context.TrainingSessions
-                .FirstOrDefaultAsync(m => m.Id == id && m.UserId == user.Id); // Zabezpieczenie
-
+                .FirstOrDefaultAsync(m => m.Id == id && m.UserId == user.Id); 
             if (trainingSession == null) return NotFound();
 
             return View(trainingSession);

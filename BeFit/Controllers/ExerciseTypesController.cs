@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BeFit.Controllers
 {
-    // Nie dajemy tu [Authorize], bo Index i Details mają być publiczne
+
     public class ExerciseTypesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,13 +18,13 @@ namespace BeFit.Controllers
             _context = context;
         }
 
-        // GET: ExerciseTypes - Dostępne dla wszystkich
+
         public async Task<IActionResult> Index()
         {
             return View(await _context.ExerciseTypes.ToListAsync());
         }
 
-        // GET: ExerciseTypes/Details/5 - Dostępne dla wszystkich
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -36,14 +36,12 @@ namespace BeFit.Controllers
             return View(exerciseType);
         }
 
-        // GET: ExerciseTypes/Create - Tylko dla Administratora
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: ExerciseTypes/Create - Tylko dla Administratora
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -58,7 +56,7 @@ namespace BeFit.Controllers
             return View(exerciseType);
         }
 
-        // GET: ExerciseTypes/Edit/5 - Tylko dla Administratora
+
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -69,7 +67,7 @@ namespace BeFit.Controllers
             return View(exerciseType);
         }
 
-        // POST: ExerciseTypes/Edit/5 - Tylko dla Administratora
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -94,7 +92,7 @@ namespace BeFit.Controllers
             return View(exerciseType);
         }
 
-        // GET: ExerciseTypes/Delete/5 - Tylko dla Administratora
+
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -107,7 +105,7 @@ namespace BeFit.Controllers
             return View(exerciseType);
         }
 
-        // POST: ExerciseTypes/Delete/5 - Tylko dla Administratora
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
